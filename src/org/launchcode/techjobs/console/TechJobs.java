@@ -2,6 +2,7 @@ package org.launchcode.techjobs.console;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -11,7 +12,7 @@ public class TechJobs {
 
     private static Scanner in = new Scanner(System.in);
 
-    public static void main (String[] args) {
+    public static void main(String[] args) {
 
         // Initialize our field map with key/name pairs
         HashMap<String, String> columnChoices = new HashMap<>();
@@ -61,9 +62,9 @@ public class TechJobs {
                 String searchTerm = in.nextLine();
 
                 if (searchField.equals("all")) {
-                    System.out.println("Search all fields not yet implemented.");
+                    findByValue(searchField, searchTerm);
                 } else {
-                    printJobs(JobData.findByColumnAndValue(searchField, searchTerm));
+                    findByValue(searchField, searchTerm);
                 }
             }
         }
@@ -103,14 +104,41 @@ public class TechJobs {
                 validChoice = true;
             }
 
-        } while(!validChoice);
-
+        } while (!validChoice);
         return choiceKeys[choiceIdx];
     }
 
     // Print a list of jobs
     private static void printJobs(ArrayList<HashMap<String, String>> someJobs) {
-
-        System.out.println("printJobs is not implemented yet");
+        for (HashMap<String, String> descriptors : someJobs) {
+            System.out.println("*****");
+            for (Map.Entry descriptor : descriptors.entrySet()) {
+                System.out.println(descriptor.getKey() + " : " + descriptor.getValue());
+            }
+            System.out.println("*****");
+            System.out.println();
+        }
     }
-}
+    private static void findByValue(String searchField, String searchTerm) {
+        ArrayList<HashMap<String, String>> allJobs = JobData.findAll();
+        ArrayList<HashMap<String, String>> someJobs = new ArrayList<>();
+        for (HashMap<String, String> job : allJobs) {
+            for (Map.Entry descriptor : job.entrySet()) {
+                if (descriptor.getKey().equals(searchField) || (searchField.equals("all"))){
+                    String descriptorValue= (String) descriptor.getValue();
+                    if (descriptorValue.toLowerCase().contains(searchTerm.toLowerCase())) {
+                        someJobs.add(job);
+                    }
+                }
+            }
+        }
+        if (someJobs.size() == 0) {
+            System.out.println();
+            System.out.println("*****");
+            System.out.println("NO RESULTS");
+            System.out.println("*****");
+        }
+        else {
+            printJobs(someJobs);
+        }
+    }}
